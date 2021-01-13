@@ -145,10 +145,6 @@ int drawscore(int scorebak, int number, int usedspr) {
         }
     }
     set_sprite_tile(usedspr, 1);
-    /* if (number < 3) {
-        set_sprite_prop(usedspr + length + 1, 
-                        get_sprite_prop(usedspr + length + 1) & ~S_FLIPX);
-    } */
     usedspr = usedspr + length + 2;
     return usedspr;
 }
