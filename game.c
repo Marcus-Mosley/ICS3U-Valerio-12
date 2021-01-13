@@ -879,12 +879,12 @@ void main() {
         if (joypad() & J_A) {
             if (keydownA < 5) {
                 attack = 1;
-                keydownA = 1;
+                if (keydownA == 0) {keydownA = 1;}
             }
         } else if (joypad() & J_B) {
             if (keydownB < 5) {
                 block = 1;
-                keydownB = 1;
+                if (keydownB == 0) {keydownB = 1;}
             }
         }
 
