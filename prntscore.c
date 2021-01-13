@@ -62,7 +62,7 @@ void keyboard() {
     scroll_bkg(-4, 0);
     DISPLAY_ON;
     HIDE_SPRITES;
-    for (count = 0; count <= 23; count++) {
+    for (count = 0; count <= 39; count++) {
         set_sprite_tile(count, 0);
         move_sprite(count, 152, 136);
     }
@@ -145,6 +145,10 @@ int drawscore(int scorebak, int number, int usedspr) {
         }
     }
     set_sprite_tile(usedspr, 1);
+    /* if (number < 3) {
+        set_sprite_prop(usedspr + length + 1, 
+                        get_sprite_prop(usedspr + length + 1) & ~S_FLIPX);
+    } */
     usedspr = usedspr + length + 2;
     return usedspr;
 }
@@ -160,7 +164,7 @@ void prntscore(int score) {
 
     set_sprite_data(0, 40, font);
 
-    for (count = 0; count <= 23; count++) {
+    for (count = 0; count <= 39; count++) {
         set_sprite_tile(count, 0);
         move_sprite(count, 152, 136);
     }
@@ -168,46 +172,51 @@ void prntscore(int score) {
     usedspr = 0;
     usedspr = drawscore(score, 3, usedspr);
 
-    if (onerank % 10 != 0) {onerank = 0;}
-    if (tworank % 10 != 0) {tworank = 0;}
-    if (threerank % 10 != 0) {threerank = 0;}
-
     if (onerank > 0) {
         usedspr = drawscore(onerank, 0, usedspr);
         set_sprite_tile(usedspr - 1, oneinit);
+        set_sprite_prop(usedspr - 1, get_sprite_prop(usedspr - 1) & ~S_FLIPX);
         move_sprite(usedspr - 1, 56, 48);
     }
     if (tworank > 0) {
         usedspr = drawscore(tworank, 1, usedspr + 1);
         set_sprite_tile(usedspr - 1, twoinit);
+        set_sprite_prop(usedspr - 1, get_sprite_prop(usedspr - 1) & ~S_FLIPX);
         move_sprite(usedspr - 1, 56, 64);
     }
     if (threerank > 0) {
         usedspr = drawscore(threerank, 2, usedspr + 1);
         set_sprite_tile(usedspr - 1, threeinit);
+        set_sprite_prop(usedspr - 1, get_sprite_prop(usedspr - 1) & ~S_FLIPX);
         move_sprite(usedspr - 1, 56, 80);
     }
 
     SHOW_SPRITES;
     waitpad(J_START);
 
-    if (score > onerank) {
-        threerank = tworank;
-        threeinit = twoinit;
-        tworank = onerank;
-        twoinit = oneinit;
-        onerank = score;
-        keyboard();
-        oneinit = initial;
-    } else if (score > tworank) {
-        threerank = tworank;
-        threeinit = twoinit;
-        tworank = score;
-        keyboard();
-        twoinit = initial;
-    } else if (score > threerank) {
-        threerank = score;
-        keyboard();
-        threeinit = initial;
+    if (score > 0) {
+        if (score > threerank) {
+            if (score > tworank) {
+                if (score > onerank) {
+                    threerank = tworank;
+                    threeinit = twoinit;
+                    tworank = onerank;
+                    twoinit = oneinit;
+                    onerank = score;
+                    keyboard();
+                    oneinit = initial;
+                } else {
+                    threerank = tworank;
+                    threeinit = twoinit;
+                    tworank = score;
+                    keyboard();
+                    twoinit = initial;
+                }
+            } else {
+                threerank = score;
+                keyboard();
+                threeinit = initial;
+            }
+        }
     }
 }

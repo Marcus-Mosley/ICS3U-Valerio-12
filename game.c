@@ -17,9 +17,11 @@
 
 UINT8 i;
 ValerioCharacter valerio, enemy_1, enemy_2, enemy_3, enemy_4, enemy_5;
-UBYTE spritesize = 8, stage, attack, block;
+UBYTE spritesize = 8, keydownA, keydownB, stage, attack, block;
 unsigned int seed = 0;
-int dmg, score, topright, topleft, botright, botleft, botrightalt, botleftalt;
+int topright, topleft, botright, botleft, botrightalt, botleftalt;
+int coun, dmg, score, scorebk;
+int scrstr[];
 
 extern const unsigned char * controls_data[];
 extern const unsigned char * controls_map[];
@@ -152,6 +154,29 @@ UBYTE checkcollisions(ValerioCharacter* one, ValerioCharacter* two) {
         (two->y >= one->y && two->y <= one->y + one->height));
 }
 
+void drawscr() {
+    int tile;
+    int length;
+    int digit;
+    length = 0;
+    scorebk = score;
+
+    HIDE_SPRITES;
+    while (scorebk != 0) {
+        digit = scorebk % 10;
+        scrstr[length] = digit;
+        scorebk = scorebk / 10;
+        length = length + 1;
+    }
+    for (coun = length; coun >= 0; coun--) {
+        tile = scrstr[coun - 1] + 55;
+        set_sprite_tile(coun + 25, tile);
+        move_sprite(coun + 25, (length - coun + 1) * 8 + 2, 150);
+    }
+    set_sprite_tile(25, 55);
+    SHOW_SPRITES;
+}
+
 void enemydeath(ValerioCharacter* character) {
     dmg = 0;
     set_sprite_tile(character->spritids[0], 54);
@@ -163,6 +188,7 @@ void enemydeath(ValerioCharacter* character) {
     movegamecharacter(character, character->x, character->y);
     score += (character->type * 5);
     character->dead = 1;
+    drawscr();
 }
 
 UBYTE canplayermove(UINT8 newplayerx, UINT8 newplayery,
@@ -818,7 +844,7 @@ void main() {
     set_bkg_tiles(0, 0, 20, 18, cave_map);
 
     SWITCH_ROM_MBC1(10);
-        set_sprite_data(0, 55, ValerioSprites);
+        set_sprite_data(0, 65, ValerioSprites);
     setupvalerio();
 
     SHOW_SPRITES;
@@ -839,8 +865,28 @@ void main() {
             stage = 2;
         }
 
-        if (joypad() & J_A) {attack = 1;
-        } else if (joypad() & J_B) {block = 1;}
+        if (keydownA >= 8) {
+            keydownA = 0;
+        } else if (keydownA > 0) {
+            keydownA += 1;
+        }
+        if (keydownB >= 8) {
+            keydownB = 0;
+        } else if (keydownB > 0) {
+            keydownB += 1;
+        }
+
+        if (joypad() & J_A) {
+            if (keydownA < 5) {
+                attack = 1;
+                keydownA = 1;
+            }
+        } else if (joypad() & J_B) {
+            if (keydownB < 5) {
+                block = 1;
+                keydownB = 1;
+            }
+        }
 
         if (joypad() & J_SELECT) {pause();}
 

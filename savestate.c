@@ -7,8 +7,8 @@
 #include <gb/gb.h>
 
 int onerank;
-int oneinit;
 int tworank;
-int twoinit;
 int threerank;
+int oneinit;
+int twoinit;
 int threeinit;
